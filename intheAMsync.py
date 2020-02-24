@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """This program syncs in.the.am to Google Calendar"""
 from __future__ import print_function
-from configparser import ConfigParser
 from datetime import datetime
 
 import calendar
@@ -60,7 +59,8 @@ APPLICATION_NAME = 'InTheAmSync'
 credentials = get_credentials()
 http = credentials.authorize(httplib2.Http())
 SERVICE = discovery.build('calendar', 'v3', http=http)
-CAL_ID = '' #Imported at start from config file
+CAL_ID = os.environ['INTHE_CAL_ID']
+
 
 def get_tasks(apikey):
     """Returns a list of tasks"""
@@ -88,15 +88,11 @@ def parse_tasks(key):
     return tasklist
 
 def main():
-    config = ConfigParser()
-    config.read('intheAMsync.conf')
-    api_key = config.get('Settings', 'inthe.am API key')
-    global CAL_ID
-    CAL_ID = config.get('Settings', 'calendar id')
-    timezone = config.get('Settings', 'time zone')
+    api_key = os.environ['INTHE_API_KEY']
+    timezone = os.environ['INTHE_TZ']
     #day_ends: items after this time will show as due on this day. Items due before this
     #time will be shown as due on the day before
-    day_ends = config.get('Settings', 'day ends')
+    day_ends = os.environ['INTHE_DAY_ENDS']
     tasklist = parse_tasks(api_key)
     prior_day = False #remove later
     print('Tasks recieved from inthe.am. Uploading to Calendar...')
